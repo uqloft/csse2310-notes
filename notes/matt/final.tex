@@ -1,0 +1,592 @@
+\documentclass[10pt, a4paper]{article}
+
+\def\name{\textbf{2310}}
+\def\auth{Matthew Low}
+
+\usepackage[T1]{fontenc}
+\usepackage[shortlabels]{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage[letterspace=-50]{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{sectsty}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+\lstset{language=C, xleftmargin=0em, numbers=none, basicstyle=\linespread{0.9}\ttfamily, breaklines=true,
+postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space}}
+% \usepackage{newpxtext, newpxmath}
+% \usepackage[cm]{sfmath}
+\usepackage{mathspec}
+\setmainfont{Helvetica Neue}
+\setmonofont{SF Mono}
+\setmathrm{Helvetica Neue}
+\setlist{leftmargin=4mm, nosep}
+\allsectionsfont{\color{blue}}
+% \renewcommand{\familydefault}{\sfdefault}
+
+\pagestyle{empty}
+\geometry{margin=0.5cm}
+\setlength{\parindent}{0cm}
+\setlength{\columnsep}{0.2cm}
+\linespread{1}
+
+\begin{document}
+
+\huge
+
+    \addfontfeature{LetterSpace=-5}
+    \textbf{\color{blue}CSSE2310} Computer Systems Principles and Programming
+    
+    \addfontfeature{LetterSpace=0}
+    \color{blue}
+    \rule{\textwidth}{1.5em}
+    \color{black}
+    \tiny
+
+\begin{multicols}{4}
+    \subsection*{Question Tips}
+    \begin{itemize}
+        \item Unused addr: $2^{\text{host bits}}- 2 - \text{number of addresses}$.
+        \item Thread diagrams are always valid.
+        \item socket, bind, listen, accept
+        \item socket, connect
+        \item LOOK AT PRE AND POST INCREMENT!!!!
+        \item TRANSLATION LOOKASIDE BUFFER
+        \item TCP: send message back \textbf{always}.
+        \item TLB: Memory cache for pages and page to frame references.
+        \item One level: if in the TLB 0, otherwise 1 page read
+        \item Two level: if in the TLB 0, otherwise, 2 pages read
+        \item Number of memory access: 1 access if in the TLB, 3 if two-level,2 if one-level
+    \end{itemize}
+    
+
+    \subsection*{Unix}
+    Examples (courtesy of Ainsley Nand on Attic)
+    \begin{itemize}
+    \item Select the first and third column delimited by ‘ ‘
+    and sort by the first
+
+    cat file.txt | cut -d’ ‘ -c1,3 | sort -k1
+
+    \item Get only the 12th line of a given file
+
+    cat file.txt | head -12 | tail -1
+
+    \item Get each line with cat and dog in a given file
+
+    cat file.txt | grep “cat” | grep “dog”
+
+    \item Find each line which contains “CSSE1001” and does
+    not contain the word “boring”
+
+    cat file.txt | grep “CSSE1001” | grep -v “boring”
+
+    \item Find the number of times “rowing” occurs
+    in a given file
+
+    cat ainsley.txt | grep -o “rowing” | wc -l
+
+    \item For all files f1,f2,f3 show all lines containing
+    “song”, “river” and “terrible”
+
+    cat f1 f2 f3 | grep song | grep river
+    | grep terrible
+
+    \item For all files g1,g2,g3 show all lines not containing
+    “song”, “river” and “awful”
+
+    cat g1 g2 g3 | grep -v song | grep -v river 
+    | grep -v awful
+    OR	grep -ve grep -ve song -ve awful f1 f2 f3
+
+    \item Find all lines in file1 containing the word
+    “dinosaur” and store in file called london
+
+    cat file1 | grep “dinosaur” > london  
+    OR	grep dinosaur file1 > london
+
+    \item Show all lines in file1 starting with W
+
+    grep \^{}W file1
+
+    \item Show all lines in file2 ending with S
+
+    grep S\$ file2
+
+    \item Modify path
+
+    export PATH = \$PATH:newpath
+
+    \item Show second last line of file
+
+    cat file | tail -n 2 | head -n 1
+
+    \item Show fifth line of file
+
+    cat file | head -n 5 | tail -n 1
+
+    \item Show the third line and later
+    (hide the first 2 lines)
+
+    cat file | tail -n +3
+
+    \item Show all but the last 10 lines
+    (hide the last 10 lines)
+
+    cat file | head -n -10      
+    \end{itemize}
+      
+    Unix commands:
+
+    \begin{itemize}
+        \item grep  print lines matching pattern
+        \begin{itemize}
+        \item  -v  invert-match: displays lines not containing the string 
+        \item  -o  only show part of line that matches pattern 
+        \item  -i  case insensitive 
+        \item  -R  search all directories 
+        \item  \$  fish\$, for example, looks for the word fish as the last word of a line 
+        \item  \^{}  fish\^{}, for example, looks for the word fish as the first word of a line 
+        \item  .  any character in regex except newlines 
+        \item  *  0 or more of previous expression in regex 
+        \end{itemize}
+        \item gcc  create executable
+        \begin{itemize}
+        \item  -o  cretaes an executable file from a c file, the order needs to be: \texttt{gcc -o <executable-name> <name-of-file>} 
+        \item  -c  compiles a c file and creates an .o file of the same name 
+        \item  -g  include debugging symbols \end{itemize} 
+        \item ls  list directory contents
+        \begin{itemize}
+        \item  -l  use a long listing format 
+        \item  -a  shows all hidden directories, do not ignore entries starting with . 
+        \item  -d  list directories themselves not their content 
+        \item  -i  print the index number of each file 
+        \end{itemize}
+        \item ps  process status
+        \begin{itemize}
+        \item  -e  show all processes (-> to see every process on the system using standard syntax) 
+        \item  -u  user's processes, if wishing to specify a user, specify -u  
+        \item  -f  do full format listing, adds additional columns 
+        \end{itemize}
+        \item sort  write sorted concatenation to stdout
+        \begin{itemize}
+        \item  -r  reverse result of comparisons 
+        \item  -k  sort via key 
+        \end{itemize}
+        \item uniq  report or omit repeated lines
+        \begin{itemize}
+        \item  -c  count number of occurrences
+        \end{itemize}
+        \item cat  concatenate files to print on stdout
+        \item head  output first part of file to stdout (def. 10)
+        \begin{itemize}
+        \item  -n  output first N number of lines (with leading - print all but last N) 
+        \item  -c  print first N bytes of each file (leading - as above)
+        \item  -q  quiet, never print headers giving file name
+        \end{itemize}
+        \item tail  output last part of file to stdout (def. 10)
+        \begin{itemize}
+        \item  -n  output last N number of lines 
+        \end{itemize}
+        \item cut  remove sections from each line of flines
+        \begin{itemize}
+        \item  -f  select only these fields; print any line that contains no delimiter character, unless -s is specified. Can specify multiple fields with a comma (e.g. -f1,3,4 ). Can specify ranges with dashes. N- Nth onwards, -M up to M, N-M n to m
+        \item  -s  do not print lines not containing delimiters 
+        \item  -d  specify delimiter (e.g. -d':')
+        \end{itemize}
+        \item wc  print newline, word and byte counts for each file
+        \begin{itemize}
+        \item  -l  number of newlines 
+        \item  -c  byte count 
+        \item  -m  character count 
+        \end{itemize}
+        \item diff  compare files line by line
+        \begin{itemize}
+        \item  -q  report only when files differ 
+        \item  -s  report identical files 
+        \end{itemize}
+        \item svn  subversion
+        \begin{itemize}
+        \item commit  send changes from working copy to repository
+        \item add put files in directory under version control. Added to repository in next commit
+        \item remove remove files and directories from VC. Scheduled for deletion upon next commit and removed from working copy.
+        \item move move and/or name something in working copy or repository
+        \item update bring changes from repository into working copy
+        \item info display information about a local or remote item
+        \item log show log messages for a set revision(s) and/or path(s)
+        \item status print the status of working copy and files and directories
+        \item diff display differences between two revisions or paths
+        \end{itemize}
+        \item chmod  change file modes (permissions)
+        \begin{itemize}
+            \item u/g/o/a user/group/others/all
+            \item +/- add remove
+            \item r/w/x read/write/execute
+            \item -c only report when a change is made
+            \item -R change files and directories recurisvely
+            \item -v output a diagnostic for eveyr file processed
+            \item -f suppress most error messages
+        \end{itemize}
+        \item rm  remove
+        \begin{itemize}
+            \item -r remove directories and their contents recursively, i.e. delete everything in the specified subdirectories
+            \item -f force -> ignore nonexistent files and arguments, never prompt
+            \item -d remove empty directories
+            \item -v explain what is being done (verbose)
+            \item * remove all
+        \end{itemize}
+        \item mkdir  make directories
+        \begin{itemize}
+            \item -m set file mode like chmod
+            \item -p no error if existing parent, make parent directories as needed
+        \end{itemize}
+        \item rmdir  remove empty directories
+        \begin{itemize}
+            \item -p remove directory and its ancestors e.g. `rmdir -p a/b/c' becomes `rmdir a/b/c a/b a'
+        \end{itemize}
+        \item cp  copy files
+        \begin{itemize}
+            \item -r copy directories recursively
+        \end{itemize}
+        \item scp  secure copy
+        \begin{itemize}
+            \item -c selects the cipher to use for encrypting data, this option is directly passed to ssh(1)
+        \end{itemize}
+        \item mv  move files / rename
+        \begin{itemize}
+            \item -f force; do not prompt before overwriting
+            \item -i interactive; prompt before overwrite
+        \end{itemize}
+        \item vim  programmers text editor
+        \item pico  simple text editor
+        \item less  allows backward and forward movement
+        \item ln  makes links between files (source is first, destination is second) 
+        \begin{itemize}
+            \item -s for symbolic link
+            \item -p for physical/hard link
+        \end{itemize}
+    \end{itemize}
+    
+    \subsection*{Networks}
+    Five-layer TCP/IP stack:
+    \begin{enumerate}
+        \item \textbf{Physical layer}
+            Medium through which signals travel through.
+        \item \textbf{(Data-)link layer} where peers can communicate directly via messages (MAC addresses)
+        \item \textbf{Network layer} exchange messages with any other host on the ``internet'', uses IP protocol, IPv4 addresses are 32bit dotted quads, sends messages via the link layer.
+        \item \textbf{Transport layer} UDP user datagram protocol (datagrams)/TCP transmission control protocol (segments), sends messages using the network layer, addresses are ports (16 bit int, restricted below 1024)
+        \item \textbf{Application layer} ``Everything else'' / web, ssh, games, SMB. addresses include URL/URI but can be anything.
+    \end{enumerate}
+    We have four main addresses:
+    \begin{itemize}
+        \item Application specific addresses
+        \item Port (differentiate between processes)
+        \item IP (which computer is this process on)
+        \item MAC (which device is this direct message to)
+    \end{itemize}
+    IP addresses and MAC addresses technically don't identify devices. The layer isolation is not completely enforced.
+
+    \textbf{What is the transport layer for?} The network layer deals with packets. We'd like streams of bytes and reliable delivery. TCP is good for this.
+    \begin{itemize}
+        \item Establish connection
+        \item Making a connection requires messages to travel there and back
+        \item Connections are bi-directional
+    \end{itemize}
+    UDP deals with discrete messages and no guarantees of delivery or acknowledgment. So streaming video, games, congested networks (many small operations) UDP is appropriate for.
+
+    \[\mathrm{Bandwidth} \neq \mathrm{Latency}\]
+    Where do ports come from?
+    \begin{itemize}
+        \item Ports: you choose
+        \item IP: internal (admin chooses) or external (DHCP)
+        \item MAC: default address, can be changed
+    \end{itemize}
+    IPv4 has 32 bit addresses. IPv6 is 128bit. We use IPv4.
+    \textbf{Server} a process which waits for requests from  clients. \textbf{Client} a process which submits requests to a server.
+    
+    TCP: there is always a client and a server. There is no difference between what a client can do and what a server can do.
+
+    Connections are bi-directional.
+
+    Client steps:
+    \begin{enumerate}
+        \item Find out the address of the machine you wish to connect to
+        \item Make a socket (fd)
+        \item \texttt{connect()} to the server
+        \item Wrap socket descriptor for nicer IO (\texttt{dup()} before calling \texttt{fdopen()})
+    \end{enumerate}
+
+    Server steps:
+    \begin{enumerate}
+        \item Make a socket
+        \item (Optional) set parameters
+        \item \texttt{bind()} the socket to a port
+        \item Set the socket to \texttt{listen()} for connections
+        \item Call \texttt{accept()} to allow a connection (use the new fd to interact with the client)
+    \end{enumerate}
+
+    \texttt{ntohs} converts a 16 bit value from network representation to the machines normal ordering.
+
+    Note that \texttt{accept()} is a blocking call, so fork or create a pthread or \textit{use a non-blocking call but don't actually tho}.
+
+    \textbf{IP headers} have a packet length $2^{16}$ bytes incl. header, protocol and TTL (reduced each time the packet reaches an interface, packet is dropped if TTL reaches 0).
+
+    \texttt{ping} sends a message to a device, sends a copy back and calculates the travel time.
+
+    \textbf{IPv4 structure} has 32 bits, divided into network and host parts eg
+    \begin{center}
+        \texttt{130.102 | 72.9}
+
+        \texttt{10000010.01100100 | 01001000.00001001}
+    \end{center}
+    Increasing the number of bits in the network parts means a ``smaller'' network. When sending a message, the network layer needs to make a decision:
+    \begin{enumerate}
+        \item Send direct to the destination (find the MAC of the destination)
+        \item Send via another mahcine (find the MAC of the intermediary)
+    \end{enumerate}
+    An organisation's network can be divided into \textbf{subnets}. A host can directly communicate with everything on the same subnet. Broadcasts will reach all hosts in the subnet. Network $\leftrightarrow$ subnet. We can describe the subnet in two ways, CIDR notation or subnet mask.
+    
+    130.102.0.0/16 means set all host bits to 0 and the value after / is how many bits are in the network part.
+    
+    130.102.12.0/24 is subnet of all addresses starting with 130.102.12 for example. Note that the /x of CIDR notation does not need to fall on a byte boundary.
+    
+    Each subnet will have two addresses reserved: all host bits = zero (minimum host address) and all host bits = one (maximum host address). So subnet \texttt{A.B.C.D/x} has $32-x$ host bits and $2^{32-x} - 2$ usable host addresses (31 is a special case).
+
+    A \textbf{netmask} is a bit pattern which will map any IP address to the corresponding network address.
+    \begin{itemize}
+        \item Set all network bits to 1
+        \item Set all host bits to 0.
+    \end{itemize}
+    For example, \texttt{/24} with mask \texttt{255.255.255.0}.
+    \begin{itemize}
+        \item 130.102.24.17 $\to$ 130.102.24.0
+        \item 130.102.24.250 $\to$ 130.102.24.0
+        \item 130.102.21.16 $\to$ 130.102.21.0
+    \end{itemize}
+    Needs to be a contiguous string of 1s. Example:
+    \texttt{130.102.160.0/20} is
+
+    \texttt{\color{blue}130.102.1010\color{black}0000.00000000} network bits
+
+    \texttt{\color{blue}255.255.1111\color{black}0000.00000000} netmask
+
+    \texttt{255.255.240.0}
+    \begin{itemize}
+        \item 130.102.163.19 $\to$ 130.102.160.0 --- yes
+        \item 130.102.171.99 $\to$ 130.102.160.0 --- yes
+        \item 130.102.176.14 $\to$ 130.102.176.0 --- yes
+    \end{itemize}
+
+    What is the broadcast address for use by 117.98.141.19 netmask = 255.254.0.0?
+    Netmask tells us that the network is 117.98.0.0/15 or
+
+    01110101.01100010.00000000.00000000/15
+
+    Setting the $32-15 = 17$ least significant bits to 1 gives
+
+    01110101.0110001\color{blue}0.00000000.00000000\color{black}/15
+    
+    01110101.0110001\color{blue}1.11111111.11111111\color{black}/15 = 117.99.255.255
+
+    Give the CIDR form and netmask for the largest network which includes 100.89.19.80, 100.89.19.82 and does not include 100.89.19.97
+    \tiny
+    \texttt{yes 100.89.19.80 01100100...00010011.01\color{blue}0\color{black}10000}
+    
+    \texttt{yes 100.89.19.82 01100100...00010011.01\color{blue}0\color{black}10010}
+    
+    \texttt{ no 100.89.19.97 01100100...00010011.01\color{blue}1\color{black}00001}
+
+    \tiny
+    So 100.89.18.80/26 is as big as possible without including 97. The netmask is 255.255.255.224
+
+    \textbf{Special networks}
+    \begin{itemize}
+        \item 10.0.0.0/8
+        \item 172.16.0.0/12
+        \item 192.168.0.0/16
+        \item 169.254.0.0/16 (for auto config)
+    \end{itemize}
+    All addresses in 127.0.0.0/8 are loopback addresses ($2^{24} - 2$ addresses)
+
+    \textbf{NAT} Host $X$ wants to connect with address $G$ (sends \{src-ip=X, src-port=sp, dest-ip=G, dest-port=80\}). Packet arrives at $G$. $G$ tries to reply with \{src-ip=G, src-port=80, dest-ip=X, dest-port=sp\} but reply doesn't go anywhere because nobody knows where $X$ is.
+
+    NAT is network address translation.
+    \begin{enumerate}
+        \item $X \to \ldots \to R \to \ldots \to G$
+        
+        \{src-ip=X, src-port=sp, dest-ip=G, dest-port=80\}
+        \item Packet arrives at $R$
+        \item $R$ modifies address information
+        
+        \{src-ip=R, src-port=np, dest-ip=G, dest-port=80\}
+        \item ...
+        \item $G$ receives packet and replies
+        
+        \{src-ip=G, src-port=80, dest-ip=R, dest-port=np\}
+        \item ... 
+        \item $R$ receives packet and modifies info
+        
+        \{src-ip=G, src-port=80, dest-ip=X, dest-port=sp\}
+        \item $X$ receives the message
+    \end{enumerate}
+
+    NAT only works because $R$ remembers that port $np$ corresponds to port $sp$ on $X$. $R$ does not need to be directly connected to $X$ or $G$.
+
+    \textbf{DNS} IP packets need to use IP addresses. Map names to IP addresses. Hosts file is still used but useless.
+
+    DNS is domain name service. Each ``domain'' will have at least two servers which know the name to address mapping for that domain. Have a collection of root nameservers. The root servers know the information for the nameservers for the TLDs. Those servers each know the nameservers for subdomains. DNS is essentially a distributed phonebook.
+ 
+    Queries are UDP messages. Servers can operate iteratively or recursively. DNS responses have TTL (more stable mappings will have longer TTL). Load balancing: different requests for the same name could get different answers. Give answers which are close to the query source. DNS domains are independent of networks.
+
+    \texttt{HTTP} is HyperText transfer protocol. Runs on top of TCP (so layer 5). We send:
+    \begin{itemize}
+        \item \texttt{GET /} (i want a page, this is the name)
+        \item \texttt{HTTP/1.1} (the protocol we are using)
+        \item A newline
+    \end{itemize}
+    We receive:
+    \begin{itemize}
+        \item \texttt{HTTP/1.1 400 Bad Request} (response is in this protocol, status code, readable version of the status)
+        \item Headers (Content-Type: text/html (what sort of file), Content-Length: 173 (how big is the file))
+        \item Blank line
+        \item HTML content telling us it was a bad request
+    \end{itemize}
+
+    Note ACK means acknowledgment, so go BACK!!!!
+
+    \subsection*{C Standard Library}
+    \begin{lstlisting}
+#include <stdio.h>
+int printf  (const char *format, ...);
+int fprintf (FILE *stream, const char *format, ...);
+int sprint  (char *str, const char *format, ...);
+int snprintf(char *str, size_t size, const char  
+            *format, ...);
+(returns -1 on error)
+int scanf(const char *format, ...);
+int fscanf(FILE *stream, const char *format, ...);
+int sscanf(const char *str, const char *format, ...);
+(returns EOF or number of tokens matched)
+FILE *fopen(const char *path, const char *mode);
+int fclose(FILE *fp);
+int fgetc(FILE *stream);
+char *fgets(char *s, int size, FILE *stream);
+int feof(FILE *stream);
+(returns NULL, EOF, EOF and NULL on errors)
+feof is only set after a failed read!
+#include <stdlib.h>
+void *malloc(size_t size);
+void free(void *ptr);
+void *calloc(size_t nmemb, size_t size);
+void *realloc(void *ptr, size_t size);
+(returns NULL on error)
+int atoi(const char *nptr);
+long int strtol(const char *nptr, char **endptr, 
+                int base);
+(sets errno on error)
+#include <string.h>
+void *memset(void *s, int c, size_t n);
+void *memcpy(void *dest, const void *src, size_t n);
+char *strcpy(char *dest, const char *src);
+char *strncpy(char *dest, const char *src, size_t n);
+int strcmp(const char *s1, const char *s2);
+    \end{lstlisting}
+
+    \subsection*{System Calls}
+    \begin{lstlisting}
+#include <unistd.h>
+pid_t fork(void);
+(returns 0 to child, child PID to parent, -1 on error)
+int execl(const char *path, const char *arg, ...);
+int execlp(const char *file, const char *arg, ...);
+(does not return on success)
+int pipe(int pipefd[2]);
+#include <sys/wait.h>
+pid_t wait(int *stat_loc);
+pid_t waitpid(pid_t pid, int *stat_loc, int options);
+(returns PID if reaped, 0 if nothing available)
+    \end{lstlisting}
+
+    \subsection*{Threading}
+    \begin{lstlisting}
+#include <pthread.h> (gcc -pthread)
+int pthread_create(pthread_t *thread, const 
+    pthread_attr_t *attr, 
+    void *(*start_routine) (void *), void *arg);
+int pthread_join(pthread_t thread, void **retval);
+int pthread_mutex_init(pthread_mutex_t *restrict
+    mutex, const pthread_mutexattr_t *restrict attr);
+int pthread_mutex_destroy(pthread_mutex_t *mutex);
+    \end{lstlisting}
+
+    \subsection*{Networking}
+    \begin{lstlisting}
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+int socket(int domain, int type, int protocol);
+int connect(int sockfd, const struct sockaddr *addr, 
+            socklen_t addrlen); 
+int bind(int sockfd, const struct sockaddr *addr,  
+        socklen_t addrlen);
+int listen(int sockfd, int backlog);
+int accept(int sockfd, struct sockaddr *addr, 
+        socklen_t *addrlen);
+
+int getaddrinfo(const char *node, const char *service, 
+                const struct addrinfo *hints, 
+                struct addrinfo **res);
+void freeaddrinfo(struct addrinfo *res);
+    \end{lstlisting}
+
+    \subsection*{Misc}
+    \begin{lstlisting}
+void qsort(void *base, size_t nmemb, size_t size,
+            int (*compar)(const void *, const void *));
+    \end{lstlisting}
+
+    \subsection*{Read line example}
+    \begin{lstlisting}
+char* read_line(FILE* file) {
+    char* result = malloc(sizeof(char)*40);
+    int position = 0;
+    int next = 0;
+
+    while (1) {
+        next = fgetc(file);
+        if (next == EOF || next == '\n') {
+            result[position] = '\0';
+            result = reverse(result);
+            return result;
+        } else {
+            result[position++] = (char)next;
+        }
+        if (position > 30) {
+            result = realloc(result, sizeof(char)*position+1);
+        }
+    }
+}
+    \end{lstlisting}
+
+    \subsection*{Equations}
+    \begin{align*}
+        \text{Block Number} &= \left\lfloor \frac{\text{Address}}{\text{Block Size}}\right\rfloor \\
+        \text{Offset} &= \text{Address } \% \text{ Block Size} \\
+        \text{No. of Block Pointers} &= \frac{\text{Block Size}}{\text{Block Pointer Size}} \\
+        \text{Subdirectories} &= \text{Link Count} -2
+    \end{align*}
+
+    \subsection*{2018 Question 11}
+    \lstinputlisting{code/2018-11.c}
+
+\end{multicols}
+
+\end{document}
