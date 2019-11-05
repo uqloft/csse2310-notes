@@ -1,1 +1,276 @@
-../../../../../University/CSSE2310/final.tex
+\documentclass[a4]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{pgf,tikz}
+\usepackage{mathrsfs}
+\usepackage{pgfplots}
+\usepackage{pdfpages}
+\usepackage[export]{adjustbox}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[landscape,margin=0.5cm]{geometry}
+\usepackage{marginnote}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{polynom}
+\usepackage{theoremref}
+\usepackage{mathrsfs}
+\usepackage{listings}
+\usepackage[bookmarks]{hyperref}
+\usepackage{mdsymbol}
+\usepackage{chngpage}
+\usepackage{subfig}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+
+
+\setlist{nosep} % or \setlist{noitemsep} to leave space around whole list
+
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{CSSE2310 Final Exam $\vert$ \thepage}
+
+\lstset{
+	language=C,
+    numbers=left, % Line numbers on left
+	frame=left,
+	stepnumber=10,
+	basicstyle=\tiny\ttfamily,
+	breaklines=true,
+}
+
+
+\titleformat{\section}{\large\scshape}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize}{\quad}{1em}{}
+
+
+\begin{document}
+	\begin{multicols*}{3}
+	\allowdisplaybreaks
+	\title{CSSE2310 Final Exam Crib Sheet}
+	\author{Tom Cranitch}
+	\date{Nov 6, 2019}
+	\maketitle
+	\thispagestyle{fancy}
+
+	\scriptsize
+	\section{Shell Commands}
+	\label{sec:shell_commands}
+
+	\texttt{for file in *.pdf; do mv "\$file" "old\_\$file"; done}
+	
+	
+
+
+	\begin{tabular}{>{\ttfamily}p{0.1\linewidth}>{\ttfamily}p{0.15\linewidth}p{0.5\linewidth}}
+		grep && pattern file \\\hline
+			& -i & ignore case\\
+			& -v & invert match\\
+			& -c & count\\
+			&    & Suppress normal output; instead print a count of matching lines for each input file.\\
+			& -L & files without match\\
+			&    & Suppress normal output; instead print name of each input file from which output would normally be suppressed.\\
+			& -l & files with match\\
+			& -m & \texttt{[NUM]} max count\\
+			&    & Stop reading after NUM lines\\
+			& -o & only matching\\
+			&    & Print only the matched parts of a matching line\\
+			& -s & no messages\\
+			&    & Suppress error messages for unreadable files\\
+			& -H & with filenames\\
+			&    & Print filenames for each match. \textbf{Default} when there is more then one file.\\
+			& -h & no filenames\\
+			& -n & line number\\
+			& -A & \texttt{[NUM]} after context\\
+			&    & Print NUM lines of trailing context after match\\
+			& -B & \texttt{[NUM]} before context\\
+			& --exclude & \texttt{[GLOB]} exclude files with match\\
+			& -r & recursive\\
+	\end{tabular}
+	\begin{tabular}{>{\ttfamily}p{0.1\linewidth}>{\ttfamily}p{0.15\linewidth}p{0.5\linewidth}}
+			ls & & \\\hline
+			& -a & all\\
+			& -A & almost all\\
+			&    & Ignore implied . and ..\\
+			& -d & list directory itself, not its files\\
+			& -l & long listing format\\
+			& & \texttt{permissions hardlinks user group size month date time/year name}\\
+	\end{tabular}
+	\begin{tabular}{>{\ttfamily}p{0.1\linewidth}>{\ttfamily}p{0.15\linewidth}p{0.5\linewidth}}
+			ps & & \texttt{UID PID PPID C STIME TTY TIME CMD} \\\hline
+			   & -e & all processes\\
+			   & -f & full-format listing\\
+	\end{tabular}
+	\begin{tabular}{>{\ttfamily}p{0.1\linewidth}>{\ttfamily}p{0.15\linewidth}p{0.5\linewidth}}
+			sort & &\\\hline
+				 & -r & reverse\\
+				 & -k & \texttt{[s,e]} use columns \texttt{s} to \texttt{e} as the key\\
+				 & & keys are evaluated in order\\
+	\end{tabular}
+	\begin{tabular}{>{\ttfamily}p{0.1\linewidth}>{\ttfamily}p{0.15\linewidth}p{0.5\linewidth}}
+			uniq & & \\\hline
+			& -c & count occurrences\\
+			& & \texttt{count line}\\
+			cat & & \\\hline
+			head & & \\\hline
+				 & -n & number of lines. If n $ < $  0 print upto the last n lines\\
+			tail & & \\\hline
+				 & -n & number of lines\\
+			chmod & & \\\hline
+			rm & & \\\hline
+			   & -r & recursive\\
+			ln & & target newname\\\hline
+			   & -s & symbolic\\
+			cut & & option file\\\hline
+				& -d & delimiter\\
+				& -f & only these fields (e.g. 1,2). First filed is 1.\\
+				& -s & only lines with the delimiter\\
+			wc & & \\\hline
+			 & -c & bytes\\
+			 & -m & chars\\
+			 & -l & lines\\
+			 & -L & max line length\\
+			 & -w & words\\
+	\end{tabular}
+
+	\section{Basic C}
+	\label{sec:basic_c}
+	
+	Example function pointers: \texttt{void (*foo)(void)}; \texttt{int (*(*foo)(void))[3]} (returns pointer to array of 3 ints); \texttt{typedef void* (*ft)(char*); ft (*var)(int, int) == void* (*(*var)(int))(char*)}.
+
+	Typedefing: Function pointer as above. For a struct \texttt{typedef struct{int one;} mystruct}.
+
+	Common funtions: \texttt{qsort(void* base, size\_t nmemb, size\_t size, int (*compar)(cons void*, const void*))} (compar returns \texttt{int} < 0 if if first argument is < second. \texttt{char* fgets(char* s, int size, FILE* stream)} (returns s, NULL on error or EOF without reading any chars), \texttt{char* strcpy(char* dest, char* src)} (returns dest), \texttt{void* realloc(void* ptr, size\_t size)} (\textbf{NOTE: must set ptr = realloc (i.e. pointer isn't changed)}), \texttt{long int strtol(char* nptr, char** endptr, int base)} (set base = 0 for automatic base, endptr can be NULL), \texttt{fopen(char* path, char* mode)}, \texttt{fdopen(int fd, char* mode)}, \texttt{[f/s]printf([FILE* stream/char* str], char* format, ...)} (space for sprintf should be malloc'd first).
+
+	\section{Processes}
+	\label{sec:processes}
+
+	After calling \texttt{wait(\&s)}, calling the following commands on \texttt{s} will give the following information,
+
+	
+			\begin{tabular}{r|l}
+			Command & Returns\\\hline
+			\texttt{WIFEXITED} & true if process exited normally\\
+			\texttt{WEXITSTATUS} & the exit status of the process\\
+			\texttt{WIFSIGNALED} & true if processes was terminated by a signal\\
+			\texttt{WTERMSIG} & the signal which caused the process to terminate\\
+			\end{tabular}
+
+		To change the program running on a process, call \texttt{int execl(char* path, char* arg0, char* arg1, ...)}. Returns -1 if the operation fails, nver returns anything other than -1. To consider the contets of \texttt{PATH} use \texttt{execlp}. To pass in an array of arguments, use \texttt{execv/execvp(char* path, char** argv)}.
+
+
+		\subsection{Example Fork/Dup Code}
+		\label{sub:example_fork_dup_code}
+
+		\lstinputlisting{./final-rev-code/runcmds.c}
+
+		\section{Networking}
+		\label{sec:networking}
+
+		\begin{tabular}{p{0.2\linewidth}|p{0.6\linewidth}}
+			Physical & Medium signals travel through (e.g. wire, infra-red, pigeons)\\
+			(Data-)Link & Peers can communicate directly (e.g. wifi, ethernet frames) (MAC)\\
+			Network & Exchange messages with any other host (IP)\\
+			Transport & Exchange messages with a process on a host (e.g. UDP/TCP) (Ports)\\
+			Application &\\
+		\end{tabular}
+
+		For addresses port gives the process, IP gives the computer, MAC gives the device.
+
+		\subsection{C Networking}
+		\label{sub:c_networking}
+		
+		
+			Client steps:
+			\begin{enumerate}
+			    \item Find out the address of the machine you wish to connect to
+			    \item Make a socket (fd)
+			    \item \texttt{connect()} to the server
+			    \item Wrap socket descriptor for nicer IO (\texttt{dup()} before calling \texttt{fdopen()})
+			\end{enumerate}
+			
+			Server steps:
+			\begin{enumerate}
+			    \item Make a socket
+			    \item (Optional) set parameters
+			    \item \texttt{bind()} the socket to a port
+			    \item Set the socket to \texttt{listen()} for connections
+			    \item Call \texttt{accept()} to allow a connection (use the new fd to interact with the client)
+			\end{enumerate}
+			
+			\texttt{ntohs} converts a 16 bit value from network representation to the machines normal ordering.
+			
+			Note that \texttt{accept()} is a blocking call, so fork or create a pthread or \textit{use a non-blocking call but don't actually tho}.
+
+		\subsection{Special Addresses and Networks}
+		\label{sub:special_addresses}
+		
+		All host bits zero gives the "network address" and all host bits one gives the "broadcast address". All addresses in \texttt{127.0.0.0/8} are "loopback" addresses (localhost). The following addresses are non-routable ("link local") \texttt{10.0.0.0/8}, \texttt{172.16.0.0/12}, \texttt{192.168.0.0/16}, \texttt{169.254.0.0/16}. 
+			
+		
+		\subsection{Example Networking Code}
+		\label{sub:example_networking_code}
+			\texttt{ntohs} is needed as different systems may have different endianness.
+
+			\lstinputlisting[linerange={558-595,600}]{./repos/final/CSSE2310/a4/depot.c}
+			\lstinputlisting[linerange={352-388}]{./repos/final/CSSE2310/a4/depot.c}
+		
+		
+		
+		\section{Threads}
+		\label{sec:threads}
+
+		To create a thread use \texttt{pthread\_create(pthread\_t* thread, const pthread\_attr\_t* attr, void* (*start\_routine) (void*), void* arg)}. To join a thread use \texttt{pthread\_join(pthread\_t thread, void** retval)}. To get the \texttt{pthread\_t} of the current thread use \texttt{pthread\_self(void)}.
+
+			Semaphores: \texttt{sem\_init(sem\_t* sem, int pshared, unigned int value) == sem\_init(sem\_t* sem, 0, N)}. In general set \texttt N to 1. For a producer/consumer task set \texttt N to 0 and each time the producer adds a job post, with each consumer waiting on the semaphore.  To wait/post \texttt{sem\_wait/sem\_post(sem\_t* sem)}. Ensure to link with \texttt{-pthread}. 
+
+			Note that if a thread \texttt A creates a thread \texttt B and \texttt A calls \texttt{pthread\_exit}, then it is possible for \texttt B to join thread \texttt A.
+		
+		\subsection{Example Threading Code}
+		\label{sub:example_threading_code}
+		
+			% TODO include pthreadcreate, join, semwait (both semaphore and mutex)
+			% TODO will actually need to write this
+			\lstinputlisting[linerange={63-69}]{./repos/final/CSSE2310/a4/depot.c}
+
+			
+
+		\section{File Systems}
+		\label{sec:file_systems}
+
+			The following formulas may be helpful,
+			
+			\[ \text{pointers/block} = \frac{\mathrm{blocksize}}{\text{pointersize}}\]
+			\[\text{totalblocks} = \text{\# direct pointers} + \text{\# single indirect} \cdot \text{pointers/block} + \ldots \] 
+
+			
+			\[ \text{maxsize} = \text{blocksize} \cdot \text{totalblocks} \] 
+
+			If the question asks about replacment, don't forget to subtract any existing blocks.
+
+			Remember to check block size for removing file questions.
+			
+			
+			
+			
+		
+			\section{Programming Questions - Common Mistakes}
+			\label{sec:programming_questions_common_mistakes}
+			
+				\begin{itemize}
+					\item When creating a thread \texttt{arg} should be a pointer (i.e. don't \texttt{&arg}).
+					\item \texttt{num >= '0' \&\& num <= '9'} not \texttt{num >= 0 \&\& num <= 9}
+					\item Make sure the \texttt{\pthread\_t} has been set by \texttt{pthread\_create} before storing
+				\end{itemize}
+		
+		
+
+
+		\end{multicols*}	
+
+\end{document}
